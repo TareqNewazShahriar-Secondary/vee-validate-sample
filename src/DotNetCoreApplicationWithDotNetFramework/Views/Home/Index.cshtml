@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style rel=stylesheet>
+    .field-invalid {
+        color: red;
+    }
+</style>
+<div id=app>
+    <p style="border:1px solid gray">
+        {{errors}}
+    </p>
+    <p style="border:1px solid gray">
+        {{errors.items.filter(x=> x.field == 'password' && x.rule == 'is_not') }}
+    </p>
+
+    <form v-on:submit.prevent="validateBeforeSubmit">
+        <div>
+            <input name="username" v-model="username" v-validate="'required'" :class="{'input': true, 'is-danger': errors.has('username') }" type="text" placeholder="user name">
+            <span v-show="errors.has('username')" class="help is-danger field-invalid">{{ errors.first('username') }}</span>
+        </div>
+        <div>
+            <input name="password" v-model="password" v-validate="{required: true, min: 4, is_not: username}" :class="{'input': true, 'is-danger': errors.has('password') }" type="text" placeholder="password">
+            <span v-show="errors.has('password')" class="help is-danger field-invalid">{{ errors.first('password') }}</span>
+            <span v-show="errors.items.filter(x=> x.field == 'password' && x.rule == 'is_not').length">{{errors.items.filter(x=> x.field == 'password' && x.rule == 'is_not')}}</span>
+        </div>
+        <div>
+            <input name="confirmPassword" v-model="confirmPassword" v-validate="{is:password}" :class="{'input': true, 'is-danger': errors.has('confirmPassword') }" type="text" placeholder="confirm password">
+            <span v-show="errors.has('confirmPassword')" class="help is-danger field-invalid">not matched with password</span>
+        </div>
+        <div>
+            <input name="photo" v-validate.continues="'required|size:50|image|ext:png'" v-on:change="fileSelected" :class="{ 'input': true, 'is-danger': errors.has('photo') }" type="file" data-vv-as="Photo" placeholder="select a phote">
+            <ul v-show="errors.has('photo')">
+                <li class="help is-danger field-invalid" v-for="e in errors.collect('photo')">{{e}}</li>
+            </ul>
+        </div>
+        <div>
+            <input name="wife" type="text" v-validate="'unique'" placeholder="unique wife" />
+            <span v-show="errors.has('wife')" class="field-invalid">{{errors.first('wife')}}</span>
+        </div>
+        <div>
+            <p class="control">
+                <button class="button is-primary" type="button" v-on:click="validateBeforeSubmit">Save</button>
+            </p>
+        </div>
+    </form>
+</div>
